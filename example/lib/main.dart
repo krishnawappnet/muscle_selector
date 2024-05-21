@@ -23,7 +23,7 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  List<Muscle>? selectedMuscles;
+  Set<Muscle>? selectedMuscles;
   final GlobalKey<MusclePickerMapState> _mapKey = GlobalKey();
 
   @override
