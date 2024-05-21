@@ -8,7 +8,7 @@ class MusclePickerMap extends StatefulWidget {
   final double? width;
   final double? height;
   final String map;
-  final Function(List<Muscle> muscles) onChanged;
+  final Function(Set<Muscle> muscles) onChanged;
   final Color? strokeColor;
   final Color? selectedColor;
   final Color? dotColor;
@@ -32,7 +32,7 @@ class MusclePickerMap extends StatefulWidget {
 
 class MusclePickerMapState extends State<MusclePickerMap> {
   final List<Muscle> _muscleList = [];
-  final List<Muscle> selectedMuscles = [];
+  final Set<Muscle> selectedMuscles = {};
 
   final _sizeController = SizeController.instance;
   Size? mapSize;
@@ -52,7 +52,6 @@ class MusclePickerMapState extends State<MusclePickerMap> {
       _muscleList.addAll(list);
       mapSize = _sizeController.mapSize;
     });
-    print(list);
   }
 
   void clearSelect() {
@@ -105,10 +104,24 @@ class MusclePickerMapState extends State<MusclePickerMap> {
 
   void _toggleButton(Muscle muscle) {
     setState(() {
-      if (selectedMuscles.contains(muscle)) {
-        selectedMuscles.remove(muscle);
+      final group = Parser.muscleGroups.entries.firstWhere(
+            (entry) => entry.value.contains(muscle.id),
+        orElse: () => const MapEntry('', []),
+      );
+
+      if (group.key.isNotEmpty) {
+        final relatedMuscles = _muscleList.where((m) => group.value.contains(m.id)).toList();
+        if (relatedMuscles.every((m) => selectedMuscles.contains(m))) {
+          selectedMuscles.removeAll(relatedMuscles);
+        } else {
+          selectedMuscles.addAll(relatedMuscles);
+        }
       } else {
-        selectedMuscles.add(muscle);
+        if (selectedMuscles.contains(muscle)) {
+          selectedMuscles.remove(muscle);
+        } else {
+          selectedMuscles.add(muscle);
+        }
       }
       widget.onChanged.call(selectedMuscles);
     });
@@ -116,7 +129,15 @@ class MusclePickerMapState extends State<MusclePickerMap> {
 
   void _useButton(Muscle muscle) {
     setState(() {
-      if (!selectedMuscles.contains(muscle)) {
+      final group = Parser.muscleGroups.entries.firstWhere(
+            (entry) => entry.value.contains(muscle.id),
+        orElse: () => const MapEntry('', []),
+      );
+
+      if (group.key.isNotEmpty) {
+        final relatedMuscles = _muscleList.where((m) => group.value.contains(m.id)).toList();
+        selectedMuscles.addAll(relatedMuscles);
+      } else {
         selectedMuscles.add(muscle);
       }
       widget.onChanged.call(selectedMuscles);

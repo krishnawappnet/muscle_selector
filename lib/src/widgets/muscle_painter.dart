@@ -4,7 +4,7 @@ import 'package:muscle_selector/src/size_controller.dart';
 
 class MusclePainter extends CustomPainter {
   final Muscle muscle;
-  final List<Muscle> selectedMuscles;
+  final Set<Muscle> selectedMuscles;
   final Color? strokeColor;
   final Color? selectedColor;
   final Color? dotColor;
@@ -33,20 +33,13 @@ class MusclePainter extends CustomPainter {
       ..strokeWidth = 1.0
       ..style = PaintingStyle.fill;
 
-    final redDot = Paint()
-      ..color = dotColor ?? Colors.red
-      ..strokeWidth = 3.0
-      ..style = PaintingStyle.fill;
-
-    final bounds = muscle.path.getBounds();
-
     _scale = sizeController.calculateScale(size);
     canvas.scale(_scale);
 
     if (selectedMuscles.any((selected) => selected.id == muscle.id)) {
       canvas.drawPath(muscle.path, selectedPen);
     }
-    canvas.drawCircle(bounds.center, 3.0, redDot);
+
     canvas.drawPath(muscle.path, pen);
   }
 
