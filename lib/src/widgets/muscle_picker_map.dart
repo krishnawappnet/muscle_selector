@@ -13,6 +13,9 @@ class MusclePickerMap extends StatefulWidget {
   final Color? selectedColor;
   final Color? dotColor;
   final bool? actAsToggle;
+  final bool? isEditing;
+  final Set<Muscle>? initialSelectedMuscles;
+  final List<String>? initialSelectedGroups;
 
   const MusclePickerMap({
     Key? key,
@@ -24,6 +27,9 @@ class MusclePickerMap extends StatefulWidget {
     this.selectedColor,
     this.dotColor,
     this.actAsToggle,
+    this.isEditing = false,
+    this.initialSelectedMuscles,
+    this.initialSelectedGroups
   }) : super(key: key);
 
   @override
@@ -51,7 +57,18 @@ class MusclePickerMapState extends State<MusclePickerMap> {
     setState(() {
       _muscleList.addAll(list);
       mapSize = _sizeController.mapSize;
+      _initializeSelectedMuscles();
     });
+  }
+
+  void _initializeSelectedMuscles() {
+    if (widget.initialSelectedMuscles != null) {
+      selectedMuscles.addAll(widget.initialSelectedMuscles!);
+    } else if (widget.initialSelectedGroups != null && widget.initialSelectedGroups!.isNotEmpty) {
+      final groupMuscles = Parser.instance.getMusclesByGroups(widget.initialSelectedGroups!, _muscleList);
+      selectedMuscles.addAll(groupMuscles);
+    }
+    widget.onChanged.call(selectedMuscles);
   }
 
   void clearSelect() {
@@ -71,7 +88,7 @@ class MusclePickerMapState extends State<MusclePickerMap> {
 
   Widget _buildStackItem(Muscle muscle) {
 
-    final bool isSelectable = muscle.id != 'human_body';
+    final bool isSelectable = muscle.id != 'human_body' && !widget.isEditing!;
 
     return GestureDetector(
       behavior: HitTestBehavior.deferToChild,

@@ -58,6 +58,8 @@ class _HomeViewState extends State<HomeView> {
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
                   map: Maps.BODY,
+                  isEditing: false,
+                  initialSelectedGroups: ['chest', 'glutes'],
                   onChanged: (muscles) {
                     setState(() {
                       selectedMuscles = muscles;
