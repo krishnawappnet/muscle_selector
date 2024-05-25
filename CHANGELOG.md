@@ -4,3 +4,6 @@
 
 ## 1.0.1
 - Bug fix for muscle deselection.
+
+## 1.0.2
+- Now widget accepts a list of initial group of muscles

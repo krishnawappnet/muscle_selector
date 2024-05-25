@@ -35,6 +35,11 @@ class Parser {
     'adductors': ['adductors1', 'adductors2']
   };
 
+  Set<Muscle> getMusclesByGroups(List<String> groupKeys, List<Muscle> muscleList) {
+    final groupIds = groupKeys.expand((groupKey) => muscleGroups[groupKey] ?? []).toSet();
+    return muscleList.where((muscle) => groupIds.contains(muscle.id)).toSet();
+  }
+
   Future<List<Muscle>> svgToMuscleList(String body) async {
     final svgMuscle = await rootBundle.loadString('${Constants.ASSETS_PATH}/$body');
     List<Muscle> muscleList = [];
@@ -54,12 +59,12 @@ class Parser {
 
       final group = muscleGroups.entries.firstWhereOrNull((entry) => entry.value.contains(id));
       if (group != null) {
-        group.value.forEach((groupId) {
+        for (var groupId in group.value) {
           if (groupId != id) {
             final groupMuscle = Muscle(id: groupId, title: title, path: path);
             muscleList.add(groupMuscle);
           }
-        });
+        }
       }
     });
 
