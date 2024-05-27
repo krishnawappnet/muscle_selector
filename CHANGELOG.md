@@ -7,3 +7,6 @@
 
 ## 1.0.2
 - Now widget accepts a list of initial group of muscles
+
+## 1.0.3
+- Neck and Lower Back Implementation
