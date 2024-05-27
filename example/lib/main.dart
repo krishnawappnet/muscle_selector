@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       home: HomeView(),
-      theme: ThemeData.dark(),
+      theme: ThemeData.light(),
     );
   }
 }
@@ -48,7 +48,7 @@ class _HomeViewState extends State<HomeView> {
           panEnabled: true,
           constrained: true,
           child: Padding(
-            padding: const EdgeInsets.only(right: 30.0), // Add right margin
+            padding: const EdgeInsets.only(right: 30.0),
             child: Align(
               alignment: Alignment.center,
               child: Transform.scale(
@@ -59,7 +59,7 @@ class _HomeViewState extends State<HomeView> {
                   height: MediaQuery.of(context).size.height,
                   map: Maps.BODY,
                   isEditing: false,
-                  initialSelectedGroups: ['chest', 'glutes'],
+                  initialSelectedGroups: const ['chest', 'glutes', 'neck', 'lower_back'],
                   onChanged: (muscles) {
                     setState(() {
                       selectedMuscles = muscles;
@@ -68,7 +68,7 @@ class _HomeViewState extends State<HomeView> {
                   actAsToggle: true,
                   dotColor: Colors.black,
                   selectedColor: Colors.lightBlueAccent,
-                  strokeColor: Colors.white24,
+                  strokeColor: Colors.black,
                 ),
               ),
             ),
