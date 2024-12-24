@@ -34,7 +34,8 @@ class Parser {
     'triceps': ['triceps1', 'triceps2'],
     'adductors': ['adductors1', 'adductors2'],
     'lower_back': ['lower_back'],
-    'neck': ['neck']
+    'neck': ['neck'],
+    'head': ['head']
   };
 
   Set<Muscle> getMusclesByGroups(List<String> groupKeys, List<Muscle> muscleList) {
