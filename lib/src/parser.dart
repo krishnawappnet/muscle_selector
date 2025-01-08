@@ -24,7 +24,7 @@ class Parser {
     'abs': ['abs1', 'abs2', 'abs3', 'abs4', 'abs5', 'abs6', 'abs7', 'abs8'],
     'abductor': ['abductor1', 'abductor2'],
     'biceps': ['biceps1', 'biceps2'],
-    'calves': ['calves1', 'calves2', 'calves3', 'calves4'],
+    'calves': ['calves1', 'calves2', 'calves3', 'calves4', 'calves5', 'calves6'],
     'forearm': ['forearm1', 'forearm2', 'forearm3', 'forearm4'],
     'glutes': ['glutes1', 'glutes2'],
     'harmstrings': ['harmstrings1', 'harmstrings2'],
@@ -35,7 +35,9 @@ class Parser {
     'adductors': ['adductors1', 'adductors2'],
     'lower_back': ['lower_back'],
     'neck': ['neck'],
-    'head': ['head1, head2']
+    'head': ['head1, head2'],
+    'knees': ['knees', ],
+    'foots': ['foot1', 'foot2'],
   };
 
   Set<Muscle> getMusclesByGroups(List<String> groupKeys, List<Muscle> muscleList) {
