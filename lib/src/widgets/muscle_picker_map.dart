@@ -79,18 +79,25 @@ class MusclePickerMapState extends State<MusclePickerMap> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return Container(
+      padding: EdgeInsets.only(right: 48),
+      width: widget.width ?? MediaQuery.of(context).size.width,
+                  height: widget.height ?? MediaQuery.of(context).size.height * 1.6,
+      child:  Stack(
       children: [
         for (var muscle in _muscleList) _buildStackItem(muscle),
       ],
-    );
+    ));
   }
 
   Widget _buildStackItem(Muscle muscle) {
 
     final bool isSelectable = muscle.id != 'human_body' && !widget.isEditing!;
 
-    return GestureDetector(
+    return Container(
+      // padding: EdgeInsets.all(32),
+      alignment: Alignment.center,
+      child:  GestureDetector(
       behavior: HitTestBehavior.deferToChild,
       onTap: () => {
         if (isSelectable) {
@@ -98,6 +105,7 @@ class MusclePickerMapState extends State<MusclePickerMap> {
         }
       },
       child: CustomPaint(
+        
         isComplex: true,
         foregroundPainter: MusclePainter(
           muscle: muscle,
@@ -109,14 +117,14 @@ class MusclePickerMapState extends State<MusclePickerMap> {
         child: Container(
           width: widget.width ?? double.infinity,
           height: widget.height ?? double.infinity,
-          constraints: BoxConstraints(
-            maxWidth: mapSize?.width ?? 0,
-            maxHeight: mapSize?.height ?? 0,
-          ),
-          alignment: Alignment.center,
+          // constraints: BoxConstraints(
+          //   maxWidth: mapSize?.width ?? 0,
+          //   maxHeight: mapSize?.height ?? 0,
+          // ),
+          // alignment: Alignment.center,
         ),
       ),
-    );
+    ));
   }
 
   void _toggleButton(Muscle muscle) {

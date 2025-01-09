@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:muscle_selector/muscle_selector.dart';
 
 void main() {
@@ -42,24 +43,13 @@ class _HomeViewState extends State<HomeView> {
           ),
         ],
       ),
-      body: Center(
-        child: InteractiveViewer(
-          scaleEnabled: true,
-          panEnabled: true,
-          constrained: true,
-          child: Padding(
-            padding: const EdgeInsets.only(right: 30.0),
-            child: Align(
-              alignment: Alignment.center,
-              child: Transform.scale(
-                scale: 1.2,
-                child: MusclePickerMap(
+      body: SingleChildScrollView(child:   MusclePickerMap(
                   key: _mapKey,
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
+                  // width: MediaQuery.of(context).size.width,
+                  // height: MediaQuery.of(context).size.height ,
                   map: Maps.BODY,
                   isEditing: false,
-                  initialSelectedGroups: const ['chest', 'glutes', 'neck', 'lower_back'],
+                  // initialSelectedGroups: const ['chest', 'glutes', 'neck', 'lower_back'],
                   onChanged: (muscles) {
                     setState(() {
                       selectedMuscles = muscles;
@@ -69,12 +59,7 @@ class _HomeViewState extends State<HomeView> {
                   dotColor: Colors.black,
                   selectedColor: Colors.lightBlueAccent,
                   strokeColor: Colors.black,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+                
+    )));
   }
 }
