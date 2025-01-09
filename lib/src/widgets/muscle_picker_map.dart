@@ -80,7 +80,7 @@ class MusclePickerMapState extends State<MusclePickerMap> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(right: 48),
+      padding: EdgeInsets.only(right: 64, bottom: 32),
       width: widget.width ?? MediaQuery.of(context).size.width,
                   height: widget.height ?? MediaQuery.of(context).size.height * 1.6,
       child:  Stack(

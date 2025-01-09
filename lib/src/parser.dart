@@ -42,10 +42,11 @@ class Parser {
     'head': ['head'],
     'posterior_head': ['posterior_head'],
 
-    'right_soleus': ['right_soleus'],
-    'left_soleus': ['left_soleus'],
+    'right_foot': ['right_foot'],
+    'left_foot': ['left_foot'],
+    'right_hand': ['right_hand'],
+    'left_hand': ['left_hand'],
     
-    // 'foots': ['foot1', 'foot2'],
   };
 
   Set<Muscle> getMusclesByGroups(List<String> groupKeys, List<Muscle> muscleList) {
