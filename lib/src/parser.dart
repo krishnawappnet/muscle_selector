@@ -18,47 +18,88 @@ class Parser {
   Parser._init();
 
   static const muscleGroups = {
-    'neck': ['neck'],
-    'chest': ['chest'],
-    'obliques': ['obliques',],
-    'abs': ['abs'],
-    'forearm': ['forearm'],
-    'biceps': ['biceps'],
-    'front_deltoids': ['front_deltoids'],
-    'posterior_gluteal': ['posterior_gluteal'],
-    'posterior_lower_back': ['posterior_lower_back'],
-    'posterior_trapezius': ['posterior_trapezius',],
-    'posterior_upper_back': ['posterior_upper_back'],
-    'posterior_back_deltoids': ['posterior_back_deltoids'],
-    'posterior_triceps': ['posterior_triceps'],
-    "posterior_forearm": ['posterior_forearm'],
-    'knees': ['knees', ],
-    'calves': ['calves'],
-    'posterior_calves': ['posterior_calves'],
-    'posterior_hamstring': ['posterior_hamstring',],  
-    'posterior_adductor': ['posterior_adductor',],
-    'quadriceps': ['quadriceps'],
-    'abductors': ['abductors'],
     'head': ['head'],
-    'posterior_head': ['posterior_head'],
-
+    'neck': ['neck'],
+    'right_neck': ['right_neck'],
+    'left_neck': ['left_neck'],
+    'right_chest': ['right_chest'],
+    'left_chest': ['left_chest'],
+    'right_obliques': ['right_obliques'],
+    'left_obliques': ['left_obliques'],
+    'abs': ['abs'],
+    'right_forearm': ['right_forearm'],
+    'left_forearm': ['left_forearm'],
+    'right_biceps': ['right_biceps'],
+    'left_biceps': ['left_biceps'],
+    'right_front_deltoids': ['right_front_deltoids'],
+    'left_front_deltoids': ['left_front_deltoids'],
+    'left_knee': ['left_knee'],
+    'right_knee': ['right_knee'],
+    'left_calves1': ['left_calves1'],
+    'left_calves2': ['left_calves2'],
+    'right_calves1': ['right_calves1'],
+    'right_calves2': ['right_calves2'],
+    'right_quadriceps1': ['right_quadriceps1'],
+    'right_quadriceps2': ['right_quadriceps2'],
+    'right_quadriceps3': ['right_quadriceps3'],
+    'right_quadriceps4': ['right_quadriceps4'],
+    'left_quadriceps1': ['left_quadriceps1'],
+    'left_quadriceps2': ['left_quadriceps2'],
+    'left_quadriceps3': ['left_quadriceps3'],
+    'left_quadriceps4': ['left_quadriceps4'],
+    'right_abductors': ['right_abductors'],
+    'left_abductors': ['left_abductors'],
     'right_foot': ['right_foot'],
     'left_foot': ['left_foot'],
     'right_hand': ['right_hand'],
     'left_hand': ['left_hand'],
-    
+
+    // 2nd svg
+    'posterior_head': ['posterior_head'],
+    'posterior_trapezius': ['posterior_trapezius'],
+    'posterior_right_trapezius': ['posterior_right_trapezius'],
+    'posterior_left_trapezius': ['posterior_left_trapezius'],
+    'posterior_right_back_deltoids': ['posterior_right_back_deltoids'],
+    'posterior_left_back_deltoids': ['posterior_left_back_deltoids'],
+    'posterior_right_triceps': ['posterior_right_triceps'],
+    'posterior_left_triceps': ['posterior_left_triceps'],
+    'posterior_right_forearm': ['posterior_right_forearm'],
+    'posterior_left_forearm': ['posterior_left_forearm'],
+    'posterior_right_upper_back1': ['posterior_right_upper_back1'],
+    'posterior_right_upper_back2': ['posterior_right_upper_back2'],
+    'posterior_left_upper_back1': ['posterior_left_upper_back1'],
+    'posterior_left_upper_back2': ['posterior_left_upper_back2'],
+    'posterior_lower_back': ['posterior_lower_back'],
+    'right_side_back': ['right_side_back'],
+    'left_side_back': ['left_side_back'],
+    'posterior_right_gluteal': ['posterior_right_gluteal'],
+    'posterior_left_gluteal': ['posterior_left_gluteal'],
+    'posterior_left_hamstring': ['posterior_left_hamstring'],
+    'posterior_right_hamstring': ['posterior_right_hamstring'],
+    'posterior_right_side_hamstring': ['posterior_right_side_hamstring'],
+    'posterior_left_side_hamstring': ['posterior_left_side_hamstring'],
+    'posterior_right1_calves': ['posterior_right1_calves'],
+    'posterior_right2_calves': ['posterior_right2_calves'],
+    'posterior_left1_calves': ['posterior_left1_calves'],
+    'posterior_left2_calves': ['posterior_left2_calves'],
+    'posterior_right_adductor': ['posterior_right_adductor'],
+    'posterior_left_adductor': ['posterior_left_adductor'],
   };
 
-  Set<Muscle> getMusclesByGroups(List<String> groupKeys, List<Muscle> muscleList) {
-    final groupIds = groupKeys.expand((groupKey) => muscleGroups[groupKey] ?? []).toSet();
+  Set<Muscle> getMusclesByGroups(
+      List<String> groupKeys, List<Muscle> muscleList) {
+    final groupIds =
+        groupKeys.expand((groupKey) => muscleGroups[groupKey] ?? []).toSet();
     return muscleList.where((muscle) => groupIds.contains(muscle.id)).toSet();
   }
 
   Future<List<Muscle>> svgToMuscleList(String body) async {
-    final svgMuscle = await rootBundle.loadString('${Constants.ASSETS_PATH}/$body');
+    final svgMuscle =
+        await rootBundle.loadString('${Constants.ASSETS_PATH}/$body');
     List<Muscle> muscleList = [];
 
-    final regExp = RegExp(Constants.MAP_REGEXP, multiLine: true, caseSensitive: false, dotAll: false);
+    final regExp = RegExp(Constants.MAP_REGEXP,
+        multiLine: true, caseSensitive: false, dotAll: false);
 
     regExp.allMatches(svgMuscle).forEach((muscleData) {
       final id = muscleData.group(1)!;
@@ -71,7 +112,8 @@ class Parser {
 
       muscleList.add(muscle);
 
-      final group = muscleGroups.entries.firstWhereOrNull((entry) => entry.value.contains(id));
+      final group = muscleGroups.entries
+          .firstWhereOrNull((entry) => entry.value.contains(id));
       if (group != null) {
         for (var groupId in group.value) {
           if (groupId != id) {
@@ -84,5 +126,4 @@ class Parser {
 
     return muscleList;
   }
-
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:muscle_selector/muscle_selector.dart';
 import 'package:muscle_selector/src/widgets/muscle_painter.dart';
+import 'package:muscle_selector/src/widgets/selected_muscles_chips.dart';
 import '../parser.dart';
 import '../size_controller.dart';
 
@@ -29,7 +30,7 @@ class MusclePickerMap extends StatefulWidget {
     this.actAsToggle,
     this.isEditing = false,
     this.initialSelectedMuscles,
-    this.initialSelectedGroups
+    this.initialSelectedGroups,
   }) : super(key: key);
 
   @override
@@ -64,8 +65,10 @@ class MusclePickerMapState extends State<MusclePickerMap> {
   void _initializeSelectedMuscles() {
     if (widget.initialSelectedMuscles != null) {
       selectedMuscles.addAll(widget.initialSelectedMuscles!);
-    } else if (widget.initialSelectedGroups != null && widget.initialSelectedGroups!.isNotEmpty) {
-      final groupMuscles = Parser.instance.getMusclesByGroups(widget.initialSelectedGroups!, _muscleList);
+    } else if (widget.initialSelectedGroups != null &&
+        widget.initialSelectedGroups!.isNotEmpty) {
+      final groupMuscles = Parser.instance
+          .getMusclesByGroups(widget.initialSelectedGroups!, _muscleList);
       selectedMuscles.addAll(groupMuscles);
     }
     widget.onChanged.call(selectedMuscles);
@@ -79,63 +82,91 @@ class MusclePickerMapState extends State<MusclePickerMap> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(right: 64, bottom: 32),
-      width: widget.width ?? MediaQuery.of(context).size.width,
-                  height: widget.height ?? MediaQuery.of(context).size.height * 1.6,
-      child:  Stack(
-      children: [
-        for (var muscle in _muscleList) _buildStackItem(muscle),
-      ],
-    ));
+    final screenWidth = widget.width ?? MediaQuery.of(context).size.width;
+    final screenHeight = widget.height ?? MediaQuery.of(context).size.height;
+    final bodyMapHeight = screenHeight * 0.8;
+    final chipsHeight = screenHeight * 0.2;
+
+    return SizedBox(
+      width: screenWidth,
+      height: screenHeight,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: bodyMapHeight,
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.only(right: 64),
+                child: Stack(
+                  children: [
+                    for (var muscle in _muscleList) _buildStackItem(muscle),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: chipsHeight,
+            child: SingleChildScrollView(
+              child: SelectedMusclesChips(
+                selectedMuscles: selectedMuscles,
+                onMuscleRemoved: (muscle) {
+                  setState(() {
+                    selectedMuscles.remove(muscle);
+                    widget.onChanged.call(selectedMuscles);
+                  });
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildStackItem(Muscle muscle) {
-
     final bool isSelectable = muscle.id != 'human_body' && !widget.isEditing!;
 
     return Container(
-      // padding: EdgeInsets.all(32),
-      alignment: Alignment.center,
-      child:  GestureDetector(
-      behavior: HitTestBehavior.deferToChild,
-      onTap: () => {
-        if (isSelectable) {
-          (widget.actAsToggle ?? false) ? _toggleButton(muscle) : _useButton(muscle)
-        }
-      },
-      child: CustomPaint(
-        
-        isComplex: true,
-        foregroundPainter: MusclePainter(
-          muscle: muscle,
-          selectedMuscles: selectedMuscles,
-          dotColor: widget.dotColor,
-          selectedColor: widget.selectedColor,
-          strokeColor: widget.strokeColor,
-        ),
-        child: Container(
-          width: widget.width ?? double.infinity,
-          height: widget.height ?? double.infinity,
-          // constraints: BoxConstraints(
-          //   maxWidth: mapSize?.width ?? 0,
-          //   maxHeight: mapSize?.height ?? 0,
-          // ),
-          // alignment: Alignment.center,
-        ),
-      ),
-    ));
+        alignment: Alignment.center,
+        child: GestureDetector(
+          behavior: HitTestBehavior.deferToChild,
+          onTap: () => {
+            if (isSelectable)
+              {
+                (widget.actAsToggle ?? false)
+                    ? _toggleButton(muscle)
+                    : _useButton(muscle)
+              }
+          },
+          child: CustomPaint(
+            isComplex: true,
+            foregroundPainter: MusclePainter(
+              muscle: muscle,
+              selectedMuscles: selectedMuscles,
+              dotColor: widget.dotColor,
+              selectedColor: widget.selectedColor,
+              strokeColor: widget.strokeColor,
+            ),
+            child: SizedBox(
+              width: widget.width ?? double.infinity,
+              height: widget.height ?? double.infinity,
+            ),
+          ),
+        ));
   }
 
   void _toggleButton(Muscle muscle) {
     setState(() {
       final group = Parser.muscleGroups.entries.firstWhere(
-            (entry) => entry.value.contains(muscle.id),
+        (entry) => entry.value.contains(muscle.id),
         orElse: () => const MapEntry('', []),
       );
 
       if (group.key.isNotEmpty) {
-        final relatedMuscles = _muscleList.where((m) => group.value.contains(m.id)).toList();
+        final relatedMuscles =
+            _muscleList.where((m) => group.value.contains(m.id)).toList();
         if (relatedMuscles.every((m) => selectedMuscles.contains(m))) {
           selectedMuscles.removeAll(relatedMuscles);
         } else {
@@ -155,12 +186,13 @@ class MusclePickerMapState extends State<MusclePickerMap> {
   void _useButton(Muscle muscle) {
     setState(() {
       final group = Parser.muscleGroups.entries.firstWhere(
-            (entry) => entry.value.contains(muscle.id),
+        (entry) => entry.value.contains(muscle.id),
         orElse: () => const MapEntry('', []),
       );
 
       if (group.key.isNotEmpty) {
-        final relatedMuscles = _muscleList.where((m) => group.value.contains(m.id)).toList();
+        final relatedMuscles =
+            _muscleList.where((m) => group.value.contains(m.id)).toList();
         selectedMuscles.addAll(relatedMuscles);
       } else {
         selectedMuscles.add(muscle);

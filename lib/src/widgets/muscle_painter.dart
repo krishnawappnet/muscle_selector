@@ -24,8 +24,8 @@ class MusclePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final pen = Paint()
-      ..color = strokeColor ?? Colors.white60
-      ..strokeWidth = 1.0
+      ..color = strokeColor ?? Colors.black45
+      ..strokeWidth = 0.3
       ..style = PaintingStyle.stroke;
 
     final selectedPen = Paint()
