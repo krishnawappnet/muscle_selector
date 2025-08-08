@@ -106,9 +106,7 @@ class MuscleView extends StatelessWidget {
               );
             },
           ),
-                    // Muscle figure below the text
-          Expanded(
-            child: Consumer<MuscleSelectorProvider>(
+          Consumer<MuscleSelectorProvider>(
               builder: (context, provider, child) {
                 return MusclePickerMap(
                   key: ValueKey(provider.isFrontView), // Use ValueKey to force rebuild
@@ -124,7 +122,7 @@ class MuscleView extends StatelessWidget {
                 );
               },
             ),
-          ),
+          
         ],
       ),
     );

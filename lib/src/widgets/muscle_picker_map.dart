@@ -83,9 +83,14 @@ class MusclePickerMapState extends State<MusclePickerMap> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
+        // Handle infinite constraints by using a reasonable default size
+        final width = widget.width ?? constraints.maxWidth;
+        final height = widget.height ?? 
+            (constraints.maxHeight.isInfinite ? 550.0 : constraints.maxHeight);
+        
         return SizedBox(
-          width: constraints.maxWidth,
-          height: constraints.maxHeight,
+          width: width,
+          height: height,
           child: Center(
             child: Stack(
               children: [
@@ -123,8 +128,8 @@ class MusclePickerMapState extends State<MusclePickerMap> {
               strokeColor: widget.strokeColor,
             ),
             child: SizedBox(
-              width: widget.width ?? double.infinity,
-              height: widget.height ?? double.infinity,
+              width: double.infinity,
+              height: double.infinity,
             ),
           ),
         ));
