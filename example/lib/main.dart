@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:muscle_selector/muscle_selector.dart';
+import 'package:provider/provider.dart';
+import 'muscle_selector_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,11 +12,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Muscle Selector',
-      home: const MuscleSelectionScreen(),
-      theme: ThemeData.light(),
+    return ChangeNotifierProvider(
+      create: (_) => MuscleSelectorProvider(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Muscle Selector',
+        home: const MuscleSelectionScreen(),
+        theme: ThemeData.light(),
+      ),
     );
   }
 }
@@ -37,36 +42,14 @@ class MuscleSelectionScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const MuscleView(
-                      isFrontView: true,
-                    ),
+                    builder: (context) => const MuscleView(),
                   ),
                 );
               },
               child: const Padding(
                 padding: EdgeInsets.all(16.0),
                 child: Text(
-                  'Body 1',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const MuscleView(
-                      isFrontView: false,
-                    ),
-                  ),
-                );
-              },
-              child: const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text(
-                  'Body 2',
+                  'Muscle Selector',
                   style: TextStyle(fontSize: 18),
                 ),
               ),
@@ -78,54 +61,71 @@ class MuscleSelectionScreen extends StatelessWidget {
   }
 }
 
-class MuscleView extends StatefulWidget {
-  final bool isFrontView;
-
-  const MuscleView({
-    super.key,
-    required this.isFrontView,
-  });
-
-  @override
-  MuscleViewState createState() => MuscleViewState();
-}
-
-class MuscleViewState extends State<MuscleView> {
-  Set<Muscle>? selectedMuscles;
-  final GlobalKey<MusclePickerMapState> _mapKey = GlobalKey();
+class MuscleView extends StatelessWidget {
+  const MuscleView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isFrontView ? 'Body 1' : 'Body 2'),
+        title: const Text('Muscle Selector'),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
             onPressed: () {
-              _mapKey.currentState?.clearSelect();
-              setState(() {
-                selectedMuscles = null;
-              });
+              context.read<MuscleSelectorProvider>().clearSelection();
             },
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: MusclePickerMap(
-          key: _mapKey,
-          map: widget.isFrontView ? Maps.BODY_FRONT : Maps.BODY_BACK,
-          isEditing: false,
-          onChanged: (muscles) {
-            setState(() {
-              selectedMuscles = muscles;
-            });
-          },
-          actAsToggle: true,
-          dotColor: Colors.black,
-          selectedColor: Colors.red,
-          strokeColor: Colors.black,
-        ),
+      body: Column(
+        children: [
+          // Toggle button for front/back view
+          Consumer<MuscleSelectorProvider>(
+            builder: (context, provider, child) {
+              return Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    provider.toggleView();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: provider.isFrontView ? Colors.blue : Colors.green,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  child: Text(
+                    provider.isFrontView ? 'Front View' : 'Back View',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+                    // Muscle figure below the text
+          Expanded(
+            child: Consumer<MuscleSelectorProvider>(
+              builder: (context, provider, child) {
+                return MusclePickerMap(
+                  key: ValueKey(provider.isFrontView), // Use ValueKey to force rebuild
+                  map: provider.isFrontView ? Maps.BODY_FRONT : Maps.BODY_BACK,
+                  isEditing: false,
+                  onChanged: (muscles) {
+                    provider.setSelectedMuscles(muscles);
+                  },
+                  actAsToggle: true,
+                  dotColor: Colors.black,
+                  selectedColor: Colors.red,
+                  strokeColor: Colors.black,
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

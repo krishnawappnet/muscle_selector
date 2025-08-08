@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:muscle_selector/muscle_selector.dart';
 import 'package:muscle_selector/src/widgets/muscle_painter.dart';
-import 'package:muscle_selector/src/widgets/selected_muscles_chips.dart';
 import '../parser.dart';
 import '../size_controller.dart';
 
@@ -82,46 +81,20 @@ class MusclePickerMapState extends State<MusclePickerMap> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = widget.width ?? MediaQuery.of(context).size.width;
-    final screenHeight = widget.height ?? MediaQuery.of(context).size.height;
-    final bodyMapHeight = screenHeight * 0.8;
-    final chipsHeight = screenHeight * 0.2;
-
-    return SizedBox(
-      width: screenWidth,
-      height: screenHeight,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            height: bodyMapHeight,
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.only(right: 64),
-                child: Stack(
-                  children: [
-                    for (var muscle in _muscleList) _buildStackItem(muscle),
-                  ],
-                ),
-              ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SizedBox(
+          width: constraints.maxWidth,
+          height: constraints.maxHeight,
+          child: Center(
+            child: Stack(
+              children: [
+                for (var muscle in _muscleList) _buildStackItem(muscle),
+              ],
             ),
           ),
-          SizedBox(
-            height: chipsHeight,
-            child: SingleChildScrollView(
-              child: SelectedMusclesChips(
-                selectedMuscles: selectedMuscles,
-                onMuscleRemoved: (muscle) {
-                  setState(() {
-                    selectedMuscles.remove(muscle);
-                    widget.onChanged.call(selectedMuscles);
-                  });
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
