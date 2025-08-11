@@ -18,12 +18,13 @@ class Parser {
   Parser._init();
 
   static const muscleGroups = {
-    'head': ['head'],
-    'neck': ['neck'],
-    'right_neck': ['right_neck'],
-    'left_neck': ['left_neck'],
-    'right_chest': ['right_chest'],
-    'left_chest': ['left_chest'],
+    // Front view muscles
+    'front_head': ['front_head'],
+    'front_neck': ['front_neck'],
+    'front_right_neck': ['front_right_neck'],
+    'front_left_neck': ['front_left_neck'],
+    'front_right_chest': ['front_right_chest'],
+    'front_left_chest': ['front_left_chest'],
     'right_obliques': ['right_obliques'],
     'left_obliques': ['left_obliques'],
     'abs': ['abs'],
@@ -49,13 +50,13 @@ class Parser {
     'left_quadriceps4': ['left_quadriceps4'],
     'right_abductors': ['right_abductors'],
     'left_abductors': ['left_abductors'],
-    'right_foot': ['right_foot'],
-    'left_foot': ['left_foot'],
-    'right_hand': ['right_hand'],
-    'left_hand': ['left_hand'],
+    'front_right_foot': ['front_right_foot'],
+    'front_left_foot': ['front_left_foot'],
+    'front_right_hand': ['front_right_hand'],
+    'front_left_hand': ['front_left_hand'],
 
-    // 2nd svg
-    'posterior_head': ['posterior_head'],
+    // Back view muscles
+    'back_head': ['back_head'],
     'posterior_trapezius': ['posterior_trapezius'],
     'posterior_right_trapezius': ['posterior_right_trapezius'],
     'posterior_left_trapezius': ['posterior_left_trapezius'],
@@ -70,8 +71,10 @@ class Parser {
     'posterior_left_upper_back1': ['posterior_left_upper_back1'],
     'posterior_left_upper_back2': ['posterior_left_upper_back2'],
     'posterior_lower_back': ['posterior_lower_back'],
-    'right_side_back': ['right_side_back'],
-    'left_side_back': ['left_side_back'],
+    'back_right_lower_back1': ['back_right_lower_back1'],
+    'back_right_lower_back2': ['back_right_lower_back2'],
+    'back_left_lower_back1': ['back_left_lower_back1'],
+    'back_left_lower_back2': ['back_left_lower_back2'],
     'posterior_right_gluteal': ['posterior_right_gluteal'],
     'posterior_left_gluteal': ['posterior_left_gluteal'],
     'posterior_left_hamstring': ['posterior_left_hamstring'],
@@ -84,6 +87,10 @@ class Parser {
     'posterior_left2_calves': ['posterior_left2_calves'],
     'posterior_right_adductor': ['posterior_right_adductor'],
     'posterior_left_adductor': ['posterior_left_adductor'],
+    'back_right_foot': ['back_right_foot'],
+    'back_left_foot': ['back_left_foot'],
+    'back_right_hand': ['back_right_hand'],
+    'back_left_hand': ['back_left_hand'],
   };
 
   Set<Muscle> getMusclesByGroups(

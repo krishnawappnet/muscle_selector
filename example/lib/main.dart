@@ -73,7 +73,7 @@ class MuscleView extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
             onPressed: () {
-              context.read<MuscleSelectorProvider>().clearSelection();
+              context.read<MuscleSelectorProvider>().clearAllSelections();
             },
           ),
         ],
@@ -112,6 +112,7 @@ class MuscleView extends StatelessWidget {
                   key: ValueKey(provider.isFrontView), // Use ValueKey to force rebuild
                   map: provider.isFrontView ? Maps.BODY_FRONT : Maps.BODY_BACK,
                   isEditing: false,
+                  initialSelectedMuscles: provider.selectedMuscles,
                   onChanged: (muscles) {
                     provider.setSelectedMuscles(muscles);
                   },
