@@ -62,15 +62,17 @@ class MusclePickerMapState extends State<MusclePickerMap> {
   }
 
   void _initializeSelectedMuscles() {
-    if (widget.initialSelectedMuscles != null) {
-      selectedMuscles.addAll(widget.initialSelectedMuscles!);
-    } else if (widget.initialSelectedGroups != null &&
-        widget.initialSelectedGroups!.isNotEmpty) {
-      final groupMuscles = Parser.instance
-          .getMusclesByGroups(widget.initialSelectedGroups!, _muscleList);
-      selectedMuscles.addAll(groupMuscles);
+    if (widget.isEditing == true) {
+      if (widget.initialSelectedMuscles != null) {
+        selectedMuscles.addAll(widget.initialSelectedMuscles!);
+      } else if (widget.initialSelectedGroups != null &&
+          widget.initialSelectedGroups!.isNotEmpty) {
+        final groupMuscles = Parser.instance
+            .getMusclesByGroups(widget.initialSelectedGroups!, _muscleList);
+        selectedMuscles.addAll(groupMuscles);
+      }
+      widget.onChanged.call(selectedMuscles);
     }
-    widget.onChanged.call(selectedMuscles);
   }
 
   void clearSelect() {
@@ -104,7 +106,7 @@ class MusclePickerMapState extends State<MusclePickerMap> {
   }
 
   Widget _buildStackItem(Muscle muscle) {
-    final bool isSelectable = muscle.id != 'human_body' && !widget.isEditing!;
+    final bool isSelectable = muscle.id != 'human_body' && widget.isEditing == true;
 
     return Container(
         alignment: Alignment.center,
@@ -122,7 +124,7 @@ class MusclePickerMapState extends State<MusclePickerMap> {
             isComplex: true,
             foregroundPainter: MusclePainter(
               muscle: muscle,
-              selectedMuscles: selectedMuscles,
+              selectedMuscles: widget.isEditing == true ? selectedMuscles : <Muscle>{},
               dotColor: widget.dotColor,
               selectedColor: widget.selectedColor,
               strokeColor: widget.strokeColor,
