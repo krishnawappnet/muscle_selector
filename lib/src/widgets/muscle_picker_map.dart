@@ -27,7 +27,7 @@ class MusclePickerMap extends StatefulWidget {
     this.selectedColor,
     this.dotColor,
     this.actAsToggle,
-    this.isEditing = false,
+    this.isEditing = true,
     this.initialSelectedMuscles,
     this.initialSelectedGroups,
   }) : super(key: key);
@@ -38,7 +38,7 @@ class MusclePickerMap extends StatefulWidget {
 
 class MusclePickerMapState extends State<MusclePickerMap> {
   final List<Muscle> _muscleList = [];
-  final Set<Muscle> selectedMuscles = {};
+  Set<Muscle> _selectedMuscles = {};
 
   final _sizeController = SizeController.instance;
   Size? mapSize;
@@ -46,43 +46,74 @@ class MusclePickerMapState extends State<MusclePickerMap> {
   @override
   void initState() {
     super.initState();
+    _selectedMuscles = widget.initialSelectedMuscles ?? {};
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadMuscleList();
     });
   }
 
-  _loadMuscleList() async {
-    final list = await Parser.instance.svgToMuscleList(widget.map);
-    _muscleList.clear();
-    setState(() {
-      _muscleList.addAll(list);
-      mapSize = _sizeController.mapSize;
-      _initializeSelectedMuscles();
-    });
+  Future<void> _loadMuscleList() async {
+    try {
+      final list = await Parser.instance.svgToMuscleList(widget.map);
+      _muscleList.clear();
+      setState(() {
+        _muscleList.addAll(list);
+        mapSize = _sizeController.mapSize;
+        _initializeSelectedMuscles();
+      });
+    } catch (e) {
+      debugPrint('Error loading muscles: $e');
+    }
   }
 
   void _initializeSelectedMuscles() {
     if (widget.isEditing == true) {
       if (widget.initialSelectedMuscles != null) {
-        selectedMuscles.addAll(widget.initialSelectedMuscles!);
+        _selectedMuscles.addAll(widget.initialSelectedMuscles!);
       } else if (widget.initialSelectedGroups != null &&
           widget.initialSelectedGroups!.isNotEmpty) {
         final groupMuscles = Parser.instance
             .getMusclesByGroups(widget.initialSelectedGroups!, _muscleList);
-        selectedMuscles.addAll(groupMuscles);
+        _selectedMuscles.addAll(groupMuscles);
       }
-      widget.onChanged.call(selectedMuscles);
+      widget.onChanged?.call(_selectedMuscles);
     }
   }
 
   void clearSelect() {
     setState(() {
-      selectedMuscles.clear();
+      _selectedMuscles.clear();
     });
+    widget.onChanged?.call(_selectedMuscles);
+  }
+
+  void _handleMuscleTap(Muscle muscle) {
+    if (widget.isEditing == false || widget.onChanged == null) return;
+
+    final isSelected = _selectedMuscles.any((m) => m.id == muscle.id);
+    Set<Muscle> newSelectedMuscles;
+
+    if (isSelected) {
+      newSelectedMuscles = _selectedMuscles.where((m) => m.id != muscle.id).toSet();
+    } else {
+      newSelectedMuscles = {..._selectedMuscles, muscle};
+    }
+
+    setState(() {
+      _selectedMuscles = newSelectedMuscles;
+    });
+
+    widget.onChanged!(newSelectedMuscles);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_muscleList.isEmpty) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     return LayoutBuilder(
       builder: (context, constraints) {
         // Handle infinite constraints by using a reasonable default size
@@ -96,7 +127,7 @@ class MusclePickerMapState extends State<MusclePickerMap> {
           child: Center(
             child: Stack(
               children: [
-                for (var muscle in _muscleList) _buildStackItem(muscle),
+                for (var muscle in _muscleList) _buildMuscleWidget(muscle),
               ],
             ),
           ),
@@ -105,79 +136,35 @@ class MusclePickerMapState extends State<MusclePickerMap> {
     );
   }
 
-  Widget _buildStackItem(Muscle muscle) {
-    final bool isSelectable = muscle.id != 'human_body' && widget.isEditing == true;
+  Widget _buildMuscleWidget(Muscle muscle) {
+    final isSelectable = !muscle.id.contains('outline') && 
+                        !muscle.id.contains('internal_structure') &&
+                        !muscle.id.contains('detail') &&
+                        !muscle.id.contains('accent') &&
+                        muscle.id != 'human_body' &&
+                        widget.isEditing == true;
 
     return Container(
-        alignment: Alignment.center,
-        child: GestureDetector(
-          behavior: HitTestBehavior.deferToChild,
-          onTap: () => {
-            if (isSelectable)
-              {
-                (widget.actAsToggle ?? false)
-                    ? _toggleButton(muscle)
-                    : _useButton(muscle)
-              }
-          },
-          child: CustomPaint(
-            isComplex: true,
-            foregroundPainter: MusclePainter(
-              muscle: muscle,
-              selectedMuscles: widget.isEditing == true ? selectedMuscles : <Muscle>{},
-              dotColor: widget.dotColor,
-              selectedColor: widget.selectedColor,
-              strokeColor: widget.strokeColor,
-            ),
-            child: SizedBox(
-              width: double.infinity,
-              height: double.infinity,
-            ),
+      alignment: Alignment.center,
+      child: GestureDetector(
+        behavior: HitTestBehavior.deferToChild,
+        onTap: isSelectable ? () => _handleMuscleTap(muscle) : null,
+        child: CustomPaint(
+          isComplex: true,
+          foregroundPainter: MusclePainter(
+            muscle: muscle,
+            selectedMuscles: widget.isEditing == true ? _selectedMuscles : <Muscle>{},
+            dotColor: widget.dotColor,
+            selectedColor: widget.selectedColor,
+            strokeColor: widget.strokeColor,
           ),
-        ));
+          child: const SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+          ),
+        ),
+      ),
+    );
   }
 
-  void _toggleButton(Muscle muscle) {
-    setState(() {
-      final group = Parser.muscleGroups.entries.firstWhere(
-        (entry) => entry.value.contains(muscle.id),
-        orElse: () => const MapEntry('', []),
-      );
-
-      if (group.key.isNotEmpty) {
-        final relatedMuscles =
-            _muscleList.where((m) => group.value.contains(m.id)).toList();
-        if (relatedMuscles.every((m) => selectedMuscles.contains(m))) {
-          selectedMuscles.removeAll(relatedMuscles);
-        } else {
-          selectedMuscles.addAll(relatedMuscles);
-        }
-      } else {
-        if (selectedMuscles.contains(muscle)) {
-          selectedMuscles.remove(muscle);
-        } else {
-          selectedMuscles.add(muscle);
-        }
-      }
-      widget.onChanged.call(selectedMuscles);
-    });
-  }
-
-  void _useButton(Muscle muscle) {
-    setState(() {
-      final group = Parser.muscleGroups.entries.firstWhere(
-        (entry) => entry.value.contains(muscle.id),
-        orElse: () => const MapEntry('', []),
-      );
-
-      if (group.key.isNotEmpty) {
-        final relatedMuscles =
-            _muscleList.where((m) => group.value.contains(m.id)).toList();
-        selectedMuscles.addAll(relatedMuscles);
-      } else {
-        selectedMuscles.add(muscle);
-      }
-      widget.onChanged.call(selectedMuscles);
-    });
-  }
 }

@@ -16,7 +16,10 @@ class MuscleSelectorProvider extends ChangeNotifier {
   }
 
   void setSelectedMuscles(Set<Muscle>? muscles) {
-    print("Setting selected muscles: ${muscles} for view: ${_isFrontView ? 'Front' : 'Back'}");
+    // print("Setting selected muscles: ${muscles} for view: ${_isFrontView ? 'Front' : 'Back'}");
+    if (muscles != null) {
+      print("Muscle IDs: ${muscles.map((muscle) => muscle.id).toList()}");
+    }
     if (_isFrontView) {
       _frontViewMuscles = muscles ?? {};
     } else {
