@@ -51,8 +51,8 @@ class Parser {
     'front_right_forearm': ['front_right_forearm'],
     'front_left_shoulder_upper_back': ['front_left_shoulder_upper_back'],
     'front_right_shoulder_upper_back': ['front_right_shoulder_upper_back'],
-    'front_left_hand_finger': ['front_left_hand_finger'],
-    'front_right_hand_fingers': ['front_right_hand_fingers'],
+    'front_left_hand_fingers': ['front_left_hand_fingers'],
+    'front_right_hand_finger': ['front_right_hand_finger'],
     'front_accent_detail': ['front_accent_detail'],
 
     // Back view muscles - from human_body_back1.svg
