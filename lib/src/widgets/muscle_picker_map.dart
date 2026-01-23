@@ -110,10 +110,9 @@ class MusclePickerMapState extends State<MusclePickerMap> {
   Widget build(BuildContext context) {
     if (_muscleList.isEmpty) {
       return const Center(
-        child: CircularProgressIndicator(),
+        child: SizedBox.shrink(),
       );
     }
-
     return LayoutBuilder(
       builder: (context, constraints) {
         // Handle infinite constraints by using a reasonable default size
